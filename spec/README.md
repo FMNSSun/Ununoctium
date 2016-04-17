@@ -58,11 +58,28 @@ i_add :: int int -> int
 Desc: Integer addition. 
 ```
 
+### ifcall
+
+```
+ifcall :: ? int verb -> ?
+Desc: Invokes the function if the provided argument is not zero.
+```
+
+
 ### dup
 
 ```
 dup :: a -> a a
 Desc: Duplicate the top element.
+```
+
+### fail
+
+```
+fail ::
+Desc: Causes the interpreter to stop execution and indicate error. Use-cases are mostly
+test-suites. The program is expected to return a non-zero exit code to indicate the error. 
+Error message is expected to use STDERR. The exact exit code or error message is up to the implementation.  
 ```
 
 ### pop
