@@ -1,12 +1,14 @@
 import sys
 import re
 import collections
+import os
 
 class Atom:
   T_I = 0
   T_D = 1
   T_S = 2
   T_V = 3
+  T_Q = 4
   
   def __init__(self, value, type_of):
     self.value = value
@@ -26,6 +28,9 @@ class Atom:
     
   def is_verb(self):
     return self.type_of == Atom.T_V
+    
+  def is_qverb(self):
+    return self.type_of == Atom.T_Q
     
   def __str__(self):
     return "(" + `self.value` + "|" + `self.type_of` + ")"
@@ -64,6 +69,12 @@ class Context:
       raise Exception("Expected D")
     return a
     
+  def pop_verb(self):
+    a = self.pop()
+    if not a.is_verb():
+      raise Exception("Expected V")
+    return a
+    
 class Builtins:
 
   @staticmethod
@@ -87,6 +98,18 @@ class Builtins:
     a = context.pop()
     print a
     
+  @staticmethod
+  def b_fail(context):
+    print context.stack
+    raise Exception("I had to fail")
+    
+  @staticmethod
+  def b_ifcall(context):
+    b = context.pop_verb()
+    a = context.pop_int()
+    if(a.value != 0):
+      run(context, to_run = b.value)
+    
 def run(context, to_run = "main",):
   function = context.functions[to_run]
   
@@ -96,6 +119,8 @@ def run(context, to_run = "main",):
         getattr(Builtins, "b_" + atom.value)(context)
       else:
         run(context, atom.value)
+    elif atom.is_qverb():
+      context.push(Atom(atom.value, Atom.T_V))
     else:
       context.push(atom)
     
@@ -123,8 +148,12 @@ def parse(contents, imports={}):
           atms.append(Atom(float(token), Atom.T_D))
         elif re.match("^\"(.*)\"$", token):
           atms.append(Atom(token[1:-1], Atom.T_S))
-        else:
+        elif re.match("^&[a-zA-Z_]{1}[a-zA-Z_0-9]*$", token):
+          atms.append(Atom(token[1:], Atom.T_Q))
+        elif re.match("^[a-zA-Z_]{1}[a-zA-Z_0-9]*$", token):
           atms.append(Atom(token, Atom.T_V))
+        else:
+          raise Exception("Invalid token :D")
       fns[name] = atms
   return fns
 
@@ -149,4 +178,5 @@ def print_usage():
   print "Usage: uuo <file>"
 
 if __name__ == "__main__":
+  print os.getcwd()
   main()
