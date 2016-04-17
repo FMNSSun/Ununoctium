@@ -1,0 +1,73 @@
+# Ununoctium Language Specification
+
+*DRAFT - 16/4/17*
+
+## About
+
+Ununoctium (uuo) is an incredibly simple stack-based progamming language. The language was designed so it can
+be implemented and extended with minimal efforts. 
+
+## Syntax and Grammar
+
+The core elements of uuo's syntax are Functions consisting of Atoms. Functions are separated by semicolons `;`. Atoms
+are separated by whitespaces such as CR, LF, tabs and space. The first Atom of a Function defines its name. Thus the grammar
+is simply:
+
+```
+functions = { function }
+function = atom, atoms, semicolon
+atoms = { atom }
+atom = int | double | string | verb
+int = /[0-9]*/
+double = /[0-9]*\.[0-9]/
+string = /\"(.*)\"/
+verb = /^[a-zA-Z_]{1}[a-zA-Z_0-9]*$/
+qverb = /&^[a-zA-Z_]{1}[a-zA-Z_0-9]*$/
+```
+
+*/../ indicates regular expressions*
+
+The difference between `verb` and `qverb` is that a `qverb` will result in the verb being pushed
+to the stack rather than being called. Thus a `qverb` can be thought of as the address of the function
+or a reference to the function.
+
+## Data types
+
+Supported data types are:
+ * `I` - integer providing at least the range of a 32 bit two's complement signed integer
+ * `D` - double. Floating point double precision.
+ * `S` - string. A sequence of characters.
+ * `V` - verb. A verb. 
+ * `A` - array. An array.
+ * `L` - list. A list (may secretly be an array).
+ * `M` - map. Key/Value-Storage
+
+Arrays must provide fast element access. 
+
+## Builtins
+
+If not enough arguments are provided or arguments of wrong type execution stops.
+Overflows or underflows when doing calculations are undefined behaviour. Out of bounds
+access to List or Array elements that do not exist results in a stop of execution. 
+
+
+### i_add
+
+```
+i_add :: int int -> int
+Desc: Integer addition. 
+```
+
+### dup
+
+```
+dup :: a -> a a
+Desc: Duplicate the top element.
+```
+
+### pop
+
+```
+pop :: a ->
+Desc: Pops an element from the stack.
+```
