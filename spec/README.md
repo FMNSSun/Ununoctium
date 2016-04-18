@@ -57,6 +57,12 @@ access to List or Array elements that do not exist results in a stop of executio
 i_add :: int int -> int
 Desc: Integer addition. 
 ```
+### ifelsecall
+
+```
+ifelsecall :: ? int verb:A verb:B -> ?
+Desc: If the provided integer is zero call A otherwise call B.
+```
 
 ### ifcall
 
@@ -80,6 +86,13 @@ fail ::
 Desc: Causes the interpreter to stop execution and indicate error. Use-cases are mostly
 test-suites. The program is expected to return a non-zero exit code to indicate the error. 
 Error message is expected to use STDERR. The exact exit code or error message is up to the implementation.  
+```
+
+### dump
+
+```
+dump :: a ->
+Desc: Dump the atom to stdout. What exactly is printed on STDOUT is up to the implementation.
 ```
 
 ### pop
