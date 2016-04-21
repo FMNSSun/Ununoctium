@@ -57,17 +57,31 @@ access to List or Array elements that do not exist results in a stop of executio
 i_add :: int int -> int
 Desc: Integer addition. 
 ```
+
+### i_lt
+
+```
+i_lt :: int:A int:B -> int
+Desc: Push 1 if A < B else push 0
+
+### i_mul
+
+```
+i_mul :: int int -> int
+Desc: Integer multiplication
+```
+
 ### ifelsecall
 
 ```
-ifelsecall :: ? int verb:A verb:B -> ?
+ifelsecall :: int verb:A verb:B ->
 Desc: If the provided integer is zero call A otherwise call B.
 ```
 
 ### ifcall
 
 ```
-ifcall :: ? int verb -> ?
+ifcall :: int verb ->
 Desc: Invokes the function if the provided argument is not zero.
 ```
 
