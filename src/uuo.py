@@ -33,7 +33,7 @@ class Atom:
     return self.type_of == Atom.T_Q
     
   def __str__(self):
-    return "(" + `self.value` + "|" + `self.type_of` + ")"
+    return "(" + str(self.value) + "|" + str(self.type_of) + ")"
     
   def __repr__(self):
     return self.__str__()
@@ -96,11 +96,11 @@ class Builtins:
   @staticmethod
   def b_dump(context):
     a = context.pop()
-    print a
+    print(a)
     
   @staticmethod
   def b_fail(context):
-    print context.stack
+    print(context.stack)
     raise Exception("I had to fail")
     
   @staticmethod
@@ -175,8 +175,7 @@ def main():
   run(Context(functions))
   
 def print_usage():
-  print "Usage: uuo <file>"
+  print("Usage: uuo <file>")
 
 if __name__ == "__main__":
-  print os.getcwd()
   main()
