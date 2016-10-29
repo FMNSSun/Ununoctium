@@ -108,7 +108,11 @@ class Builtins:
     b = context.pop_verb()
     a = context.pop_int()
     if(a.value != 0):
-      run(context, to_run = b.value)
+        if hasattr(Builtins, "b_" + b.value):
+          function = getattr(Builtins, "b_" + b.value)
+          function(context)
+        else:
+          run(context, to_run = b.value)
     
 def run(context, to_run = "main",):
   function = context.functions[to_run]
@@ -126,6 +130,7 @@ def run(context, to_run = "main",):
     
   
 def parse(contents, imports={}):
+  global INCLUDE_DIR
   functions = contents.split(";")
   fns = {}
   for function in functions:
@@ -136,7 +141,7 @@ def parse(contents, imports={}):
       tokens = tokens[1:]
       for token in tokens:
         if re.match("^@(.*)$", token):
-          path = token[1:]
+          path = INCLUDE_DIR + token[1:]
           if(path in imports):
             continue
           imports[path] = True
@@ -164,18 +169,20 @@ def load_contents(path):
   return data
   
 def main():
-  if(len(sys.argv) != 2):
+  if(len(sys.argv) != 3):
     print_usage();
     return None
     
   file = sys.argv[1]
   contents = load_contents(file)
+  global INCLUDE_DIR
+  INCLUDE_DIR = sys.argv[2]
   
   functions = parse(contents)
   run(Context(functions))
   
 def print_usage():
-  print("Usage: uuo <file>")
+  print("Usage: uuo <file> <include dir>")
 
 if __name__ == "__main__":
   main()
