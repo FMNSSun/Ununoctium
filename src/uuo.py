@@ -44,6 +44,7 @@ class Context:
   def __init__(self, functions):
     self.functions = functions
     self.stack = collections.deque()
+    self.location = ("n/a",-1,None)
     
   def push(self, atom):
     self.stack.append(atom)
@@ -92,6 +93,13 @@ class Builtins:
     b = context.pop_int()
     a = context.pop_int()
     context.push(Atom(a.value+b.value, Atom.T_I))
+
+  @staticmethod
+  def b_i_cmp(context):
+    b = context.pop_int()
+    a = context.pop_int()
+    result = 1 if a.value == b.value else 0
+    context.push(Atom(result, Atom.T_I))
     
   @staticmethod
   def b_dump(context):
@@ -101,6 +109,7 @@ class Builtins:
   @staticmethod
   def b_fail(context):
     print(context.stack)
+    print(context.location)
     raise Exception("I had to fail")
     
   @staticmethod
@@ -113,11 +122,26 @@ class Builtins:
           function(context)
         else:
           run(context, to_run = b.value)
+
+  @staticmethod
+  def b_ifncall(context):
+    b = context.pop_verb()
+    a = context.pop_int()
+    if(a.value == 0):
+        if hasattr(Builtins, "b_" + b.value):
+          function = getattr(Builtins, "b_" + b.value)
+          function(context)
+        else:
+          run(context, to_run = b.value)
     
 def run(context, to_run = "main",):
   function = context.functions[to_run]
+  context.location = (to_run,-1)
   
+  i = 0
+
   for atom in function:
+    context.location = (to_run, i, atom)
     if atom.is_verb():
       if hasattr(Builtins, "b_" + atom.value):
         getattr(Builtins, "b_" + atom.value)(context)
@@ -127,6 +151,7 @@ def run(context, to_run = "main",):
       context.push(Atom(atom.value, Atom.T_V))
     else:
       context.push(atom)
+    i += 1
     
   
 def parse(contents, imports={}):
@@ -147,9 +172,9 @@ def parse(contents, imports={}):
           imports[path] = True
           contents_ = load_contents(path)
           fns.update(parse(contents_, imports))
-        elif re.match("^[0-9]*$", token):
+        elif re.match("^-?[0-9]+$", token):
           atms.append(Atom(int(token,10), Atom.T_I))
-        elif re.match("^[0-9]*\.[0-9]*$", token):
+        elif re.match("^-?[0-9]+\.[0-9]*$", token):
           atms.append(Atom(float(token), Atom.T_D))
         elif re.match("^\"(.*)\"$", token):
           atms.append(Atom(token[1:-1], Atom.T_S))
@@ -164,9 +189,14 @@ def parse(contents, imports={}):
 
 def load_contents(path):
   fhndl = open(path,"r")
-  data = fhndl.read()
+  lines = []
+  for line in fhndl:
+    line = line.strip()
+    if line.startswith("#"):
+      continue
+    lines.append(line)
   fhndl.close()
-  return data
+  return reduce(lambda a,b: a + " " + b, lines)
   
 def main():
   if(len(sys.argv) != 3):
