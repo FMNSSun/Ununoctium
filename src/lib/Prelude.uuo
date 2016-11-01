@@ -1,3 +1,8 @@
 zero
- 0
+  0
+;
+
+
+i_square
+  dup i_mul
 ;

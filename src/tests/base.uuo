@@ -3,35 +3,38 @@
 #
 
 main
- # Don't remove these two checks.
- 0 &fail ifcall
- 1 &fail ifncall
+  # Don't remove these two checks.
+  0 &fail ifcall
+  1 &fail ifncall
 
- # Test if function is called. Don't remove this either.
- foo 5 i_cmp &fail ifncall
+  # Test if function is called. Don't remove this either.
+  foo 5 i_equ &fail ifncall
 
- # Call test cases here
+  # Call test cases here
 
- test_i_cmp
- test_i_add
+  test_i_equ
+  test_i_add
+  test_i_sub
+  test_i_mul
+  test_i_div
 
- # ...
+  # ...
 
- # Dump -42 on success.
- -42 dump
+  # Dump -42 on success.
+  -42 dump
 ;
 
 
 assert_equals
-  i_cmp &fail ifncall
+  i_equ &fail ifncall
 ;
 
 
-test_i_cmp
-  "test_i_cmp" dump
+test_i_equ
+  "test_i_equ" dump
 
-  5 5 i_cmp &fail ifncall
-  5 4 i_cmp &fail ifcall
+  5 5 i_equ &fail ifncall
+  5 4 i_equ &fail ifcall
 ;
 
 
@@ -40,6 +43,31 @@ test_i_add
 
   10 8 i_add 18 assert_equals
   -5 3 i_add -2 assert_equals
+;
+
+
+test_i_sub
+  "test_i_sub" dump
+
+  10 8 i_sub 2 assert_equals
+  2 10 i_sub -8 assert_equals
+;
+
+
+test_i_mul
+  "test_i_mul" dump
+
+  -1 -1 i_mul 1 assert_equals
+  -2 11 i_mul -22 assert_equals
+;
+
+
+test_i_div
+  "test_i_div" dump
+
+  -1 -1 i_div 1 assert_equals
+  10 2 i_div 5 assert_equals
+  10 3 i_div 3 assert_equals
 ;
 
 

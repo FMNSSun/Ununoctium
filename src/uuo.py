@@ -50,6 +50,9 @@ class Context:
     self.stack.append(atom)
     
   def pop(self):
+    if len(self.stack) == 0:
+      print(self.location)
+      raise Exception("Stack is empty.")
     return self.stack.pop()
     
   def pop_int(self):
@@ -95,7 +98,25 @@ class Builtins:
     context.push(Atom(a.value+b.value, Atom.T_I))
 
   @staticmethod
-  def b_i_cmp(context):
+  def b_i_sub(context):
+    b = context.pop_int()
+    a = context.pop_int()
+    context.push(Atom(a.value-b.value, Atom.T_I))
+
+  @staticmethod
+  def b_i_mul(context):
+    b = context.pop_int()
+    a = context.pop_int()
+    context.push(Atom(a.value*b.value, Atom.T_I))
+
+  @staticmethod
+  def b_i_div(context):
+    b = context.pop_int()
+    a = context.pop_int()
+    context.push(Atom(a.value/b.value, Atom.T_I))
+
+  @staticmethod
+  def b_i_equ(context):
     b = context.pop_int()
     a = context.pop_int()
     result = 1 if a.value == b.value else 0
