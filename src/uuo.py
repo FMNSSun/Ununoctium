@@ -9,6 +9,7 @@ class Atom:
   T_S = 2
   T_V = 3
   T_Q = 4
+  T_L = 5
   
   def __init__(self, value, type_of):
     self.value = value
@@ -31,6 +32,9 @@ class Atom:
     
   def is_qverb(self):
     return self.type_of == Atom.T_Q
+    
+  def is_list(self):
+    return self.type_of == Atom.T_L
     
   def __str__(self):
     return "(" + str(self.value) + "|" + str(self.type_of) + ")"
@@ -75,6 +79,12 @@ class Context:
       raise Exception("Expected V")
     return a
     
+  def pop_list(self):
+    a = self.pop()
+    if not a.is_list():
+      raise Exception("Expected L")
+    return a
+    
 class Builtins:
 
   @staticmethod
@@ -102,6 +112,25 @@ class Builtins:
   def b_fail(context):
     print(context.stack)
     raise Exception("I had to fail")
+    
+  @staticmethod
+  def b_list(context):
+    context.push(Atom([], Atom.T_L))
+    
+  @staticmethod
+  def b_prepend(context):
+    b = context.pop()
+    a = context.pop_list()
+    a.value.insert(0, b)
+    context.push(a)
+    
+  @staticmethod
+  def b_append(context):
+    b = context.pop()
+    a = context.pop_list()
+    a.value.append(b)
+    context.push(a)
+    
     
   @staticmethod
   def b_ifcall(context):
