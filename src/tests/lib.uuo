@@ -1,0 +1,21 @@
+imports
+ @Prelude.uuo
+;
+
+main
+ zero &fail ifcall
+
+ test_i_square
+
+ -42 dump
+;
+
+
+assert_equals
+  i_equ &fail ifncall
+;
+
+
+test_i_square
+  9 i_square 81 assert_equals
+;
