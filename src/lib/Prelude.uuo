@@ -3,6 +3,10 @@ zero
 ;
 
 
+xs_empty
+  xs_length 0 i_equ
+;
+
 i_square
   dup i_mul
 ;

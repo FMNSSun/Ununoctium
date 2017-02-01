@@ -6,6 +6,7 @@ main
  zero &fail ifcall
 
  test_i_square
+ test_xs_empty
 
  -42 dump
 ;
@@ -21,4 +22,12 @@ test_i_square
 
   9 i_square 81 assert_equals
   -33 i_square 1089
+;
+
+
+test_xs_empty
+  "test_xs_empty" dump
+  
+  list xs_empty 1 assert_equals
+  list 2 xs_append xs_empty 0 assert_equals
 ;
