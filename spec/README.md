@@ -1,6 +1,6 @@
 # Ununoctium Language Specification
 
-*DRAFT - 16/4/17*
+*DRAFT - 2016y/4m/17d*
 
 ## About
 
@@ -63,6 +63,7 @@ Desc: Integer addition.
 ```
 i_lt :: int:A int:B -> int
 Desc: Push 1 if A < B else push 0
+```
 
 ### i_mul
 
