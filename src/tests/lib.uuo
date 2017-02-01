@@ -17,5 +17,8 @@ assert_equals
 
 
 test_i_square
+  "test_i_square" dump
+
   9 i_square 81 assert_equals
+  -33 i_square 1089
 ;

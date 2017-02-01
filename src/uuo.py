@@ -2,7 +2,34 @@ import sys
 import re
 import collections
 import os
+from functools import reduce
 
+class PList:
+
+  def __init__(self, ls = []):
+    self.ls = ls
+    
+  def get(self, i):
+    return self.ls[i]
+    
+  def set(self, i, v):
+    self.ls[i] = v
+    
+  def __str__(self):
+    return str(self.ls)
+    
+  def length(self):
+    return len(self.ls)
+    
+  def append(self, x):
+    self.ls.append(x)
+
+  def drop_head(self):
+    head = self.ls[0]
+    self.ls = self.ls[1:]
+    return head
+
+    
 class Atom:
   T_I = 0
   T_D = 1
@@ -92,6 +119,14 @@ class Context:
 class Builtins:
 
   @staticmethod
+  def call_helper(context, value):
+    if hasattr(Builtins, "b_" + value):
+      function = getattr(Builtins, "b_" + value)
+      function(context)
+    else:
+      run(context, to_run = value)
+
+  @staticmethod
   def b_pop(context):
     context.pop()
     
@@ -123,7 +158,7 @@ class Builtins:
   def b_i_div(context):
     b = context.pop_int()
     a = context.pop_int()
-    context.push(Atom(a.value/b.value, Atom.T_I))
+    context.push(Atom(a.value//b.value, Atom.T_I))
 
   @staticmethod
   def b_i_equ(context):
@@ -141,50 +176,62 @@ class Builtins:
   def b_fail(context):
     print(context.stack)
     print(context.location)
+    input('moo')
     raise Exception("I had to fail")
     
   @staticmethod
   def b_list(context):
-    context.push(Atom([], Atom.T_L))
+    context.push(Atom(PList([]), Atom.T_L))
     
   @staticmethod
-  def b_prepend(context):
+  def b_xs_prepend(context):
     b = context.pop()
     a = context.pop_list()
     a.value.insert(0, b)
     context.push(a)
     
   @staticmethod
-  def b_append(context):
+  def b_xs_append(context):
     b = context.pop()
     a = context.pop_list()
     a.value.append(b)
     context.push(a)
     
+  @staticmethod
+  def b_xs_length(context):
+    a = context.pop_list()
+    context.push(Atom(a.value.length(), Atom.T_I))
     
+  @staticmethod
+  def b_xs_uncons(context):
+    a = context.pop_list()
+    if(a.value.length() == 0):
+      raise Exception('Empty list.')
+    
+    head = a.value.drop_head()
+    context.push(a)
+    context.push(head) 
+    
+  @staticmethod
+  def b_typeof(context):
+    a = context.pop()
+    context.push(Atom(a.type_of, Atom.T_I))    
+      
   @staticmethod
   def b_ifcall(context):
     b = context.pop_verb()
     a = context.pop_int()
     if(a.value != 0):
-        if hasattr(Builtins, "b_" + b.value):
-          function = getattr(Builtins, "b_" + b.value)
-          function(context)
-        else:
-          run(context, to_run = b.value)
+        Builtins.call_helper(context, b.value)
 
   @staticmethod
   def b_ifncall(context):
     b = context.pop_verb()
     a = context.pop_int()
     if(a.value == 0):
-        if hasattr(Builtins, "b_" + b.value):
-          function = getattr(Builtins, "b_" + b.value)
-          function(context)
-        else:
-          run(context, to_run = b.value)
+        Builtins.call_helper(context, b.value)
     
-def run(context, to_run = "main",):
+def run(context, to_run = "main"):
   function = context.functions[to_run]
   context.location = (to_run,-1)
   
@@ -193,10 +240,7 @@ def run(context, to_run = "main",):
   for atom in function:
     context.location = (to_run, i, atom)
     if atom.is_verb():
-      if hasattr(Builtins, "b_" + atom.value):
-        getattr(Builtins, "b_" + atom.value)(context)
-      else:
-        run(context, atom.value)
+      Builtins.call_helper(context, atom.value)
     elif atom.is_qverb():
       context.push(Atom(atom.value, Atom.T_V))
     else:

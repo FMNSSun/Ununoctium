@@ -17,6 +17,8 @@ main
   test_i_sub
   test_i_mul
   test_i_div
+  test_xs_append
+  test_typeof
 
   # ...
 
@@ -25,8 +27,13 @@ main
 ;
 
 
-assert_equals
+i_assert_equals
   i_equ &fail ifncall
+;
+
+
+xs_assert_equals
+  xs_equ &fail ifncall
 ;
 
 
@@ -41,33 +48,59 @@ test_i_equ
 test_i_add
   "test_i_add" dump
 
-  10 8 i_add 18 assert_equals
-  -5 3 i_add -2 assert_equals
+  10 8 i_add 18 i_assert_equals
+  -5 3 i_add -2 i_assert_equals
 ;
 
 
 test_i_sub
   "test_i_sub" dump
 
-  10 8 i_sub 2 assert_equals
-  2 10 i_sub -8 assert_equals
+  10 8 i_sub 2 i_assert_equals
+  2 10 i_sub -8 i_assert_equals
 ;
 
 
 test_i_mul
   "test_i_mul" dump
 
-  -1 -1 i_mul 1 assert_equals
-  -2 11 i_mul -22 assert_equals
+  -1 -1 i_mul 1 i_assert_equals
+  -2 11 i_mul -22 i_assert_equals
 ;
 
 
 test_i_div
   "test_i_div" dump
 
-  -1 -1 i_div 1 assert_equals
-  10 2 i_div 5 assert_equals
-  10 3 i_div 3 assert_equals
+  -1 -1 i_div 1 i_assert_equals
+  10 2 i_div 5 i_assert_equals
+  10 3 i_div 3 i_assert_equals
+  "completed" dump
+;
+
+
+test_xs_append
+  "test_xs_append" dump
+  
+  list 2 xs_append 3 xs_append xs_length 2 i_assert_equals
+  
+  "test_xs_append.." dump
+  
+  list 3 xs_append 0 xs_append 5 xs_append
+    xs_uncons 3 i_assert_equals
+    xs_uncons 0 i_assert_equals
+    xs_uncons 5 i_assert_equals
+;
+
+
+test_typeof
+  "test_typeof" dump
+
+  0 typeof 0 i_assert_equals
+  1.0 typeof 1 i_assert_equals
+  "hi" typeof 2 i_assert_equals
+  &hi typeof 3 i_assert_equals
+  list typeof 5 i_assert_equals
 ;
 
 
